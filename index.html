@@ -7,298 +7,69 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #222534;
-    --border: #2e3247;
-    --accent: #4f7cff;
-    --accent2: #7c5cff;
-    --text: #e8eaf0;
-    --text2: #8b90a8;
-    --success: #34d399;
-    --radius: 14px;
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #222534;
+    --border: #2e3247; --accent: #4f7cff; --accent2: #7c5cff;
+    --text: #e8eaf0; --text2: #8b90a8; --success: #34d399; --radius: 14px;
   }
-
-  body {
-    font-family: 'Pretendard', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 24px 16px 60px;
-  }
-
+  body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px 16px 60px; }
   .header { text-align: center; margin-bottom: 32px; padding-top: 16px; }
-  .header-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-bottom: 12px;
-  }
+  .header-badge { display: inline-block; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
   .header h1 { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
   .header p { font-size: 13px; color: var(--text2); margin-top: 6px; }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  .card-title {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text2);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+  .card-title { font-size: 11px; font-weight: 600; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
   .manager-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .manager-btn {
-    background: var(--surface2);
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 12px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--text2);
-    font-family: 'Pretendard', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-  }
+  .manager-btn { background: var(--surface2); border: 2px solid var(--border); border-radius: 10px; padding: 16px 12px; text-align: center; cursor: pointer; transition: all 0.2s; color: var(--text2); font-family: 'Pretendard', sans-serif; font-size: 15px; font-weight: 600; }
   .manager-btn:hover { border-color: var(--accent); color: var(--text); }
-  .manager-btn.active {
-    border-color: var(--accent);
-    background: rgba(79, 124, 255, 0.12);
-    color: var(--accent);
-  }
+  .manager-btn.active { border-color: var(--accent); background: rgba(79,124,255,0.12); color: var(--accent); }
   .manager-btn .icon { font-size: 22px; display: block; margin-bottom: 6px; }
-
   .hospital-section { display: none; }
   .hospital-section.visible { display: block; }
-
-  .filter-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-  .filter-chip {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 12px;
-    font-size: 12px;
-    color: var(--text2);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-    font-family: 'Pretendard', sans-serif;
-  }
-  .filter-chip:hover, .filter-chip.active {
-    background: rgba(79, 124, 255, 0.15);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .search-box {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 14px;
-    color: var(--text);
-    font-family: 'Pretendard', sans-serif;
-    font-size: 14px;
-    margin-bottom: 10px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  .filter-row { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+  .filter-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text2); cursor: pointer; white-space: nowrap; transition: all 0.2s; font-family: 'Pretendard', sans-serif; }
+  .filter-chip:hover, .filter-chip.active { background: rgba(79,124,255,0.15); border-color: var(--accent); color: var(--accent); }
+  .search-box { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: 'Pretendard', sans-serif; font-size: 14px; margin-bottom: 10px; outline: none; transition: border-color 0.2s; }
   .search-box:focus { border-color: var(--accent); }
   .search-box::placeholder { color: var(--text2); }
-
-  .hospital-list {
-    max-height: 240px;
-    overflow-y: auto;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-  }
-  .hospital-item {
-    padding: 12px 14px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+  .hospital-list { max-height: 260px; overflow-y: auto; border-radius: 10px; border: 1px solid var(--border); }
+  .hospital-item { padding: 12px 14px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.15s; display: flex; align-items: center; justify-content: space-between; }
   .hospital-item:last-child { border-bottom: none; }
   .hospital-item:hover { background: var(--surface2); }
-  .hospital-item.selected { background: rgba(79, 124, 255, 0.1); }
   .hospital-name { font-size: 14px; font-weight: 500; color: var(--text); }
   .hospital-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
-  .hospital-badge {
-    font-size: 10px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 2px 7px;
-    color: var(--text2);
-    white-space: nowrap;
-  }
-
-  .selected-hospital {
-    background: rgba(79, 124, 255, 0.1);
-    border: 1px solid var(--accent);
-    border-radius: 10px;
-    padding: 12px 14px;
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 10px;
-  }
+  .hospital-badge { font-size: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; color: var(--text2); white-space: nowrap; }
+  .selected-hospital { background: rgba(79,124,255,0.1); border: 1px solid var(--accent); border-radius: 10px; padding: 12px 14px; display: none; align-items: center; justify-content: space-between; margin-top: 10px; }
   .selected-hospital.visible { display: flex; }
   .selected-hospital .name { font-size: 15px; font-weight: 600; color: var(--accent); }
   .selected-hospital .meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
-
-  .change-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 5px 10px;
-    color: var(--text2);
-    font-size: 11px;
-    cursor: pointer;
-    font-family: 'Pretendard', sans-serif;
-    transition: all 0.2s;
-  }
+  .change-btn { background: none; border: 1px solid var(--border); border-radius: 7px; padding: 5px 10px; color: var(--text2); font-size: 11px; cursor: pointer; font-family: 'Pretendard', sans-serif; transition: all 0.2s; }
   .change-btn:hover { border-color: var(--accent); color: var(--accent); }
-
   .form-section { display: none; }
   .form-section.visible { display: block; }
-
   .field { margin-bottom: 16px; }
   .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 7px; }
   .field label span.req { color: var(--accent); margin-left: 2px; }
-  .field input, .field textarea {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 14px;
-    color: var(--text);
-    font-family: 'Pretendard', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  .field input, .field textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: 'Pretendard', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
   .field input:focus, .field textarea:focus { border-color: var(--accent); }
   .field input::placeholder, .field textarea::placeholder { color: var(--text2); }
   .field textarea { resize: vertical; min-height: 80px; }
-
   .radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
-  .radio-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 13px;
-    color: var(--text2);
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Pretendard', sans-serif;
-  }
+  .radio-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 13px; color: var(--text2); cursor: pointer; transition: all 0.2s; font-family: 'Pretendard', sans-serif; }
   .radio-btn:hover { border-color: var(--accent); color: var(--text); }
-  .radio-btn.active {
-    background: rgba(79, 124, 255, 0.15);
-    border-color: var(--accent);
-    color: var(--accent);
-    font-weight: 600;
-  }
-
+  .radio-btn.active { background: rgba(79,124,255,0.15); border-color: var(--accent); color: var(--accent); font-weight: 600; }
   .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .section-label { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
   .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  .submit-btn {
-    width: 100%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    border-radius: 12px;
-    padding: 16px;
-    color: white;
-    font-family: 'Pretendard', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: opacity 0.2s, transform 0.1s;
-    letter-spacing: -0.3px;
-  }
+  .submit-btn { width: 100%; background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; border-radius: 12px; padding: 16px; color: white; font-family: 'Pretendard', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: opacity 0.2s, transform 0.1s; }
   .submit-btn:hover { opacity: 0.92; }
   .submit-btn:active { transform: scale(0.99); }
   .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--success);
-    color: #0a2a1e;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 12px 24px;
-    border-radius: 30px;
-    transition: transform 0.3s ease;
-    z-index: 999;
-    white-space: nowrap;
-  }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--success); color: #0a2a1e; font-size: 14px; font-weight: 600; padding: 12px 24px; border-radius: 30px; transition: transform 0.3s ease; z-index: 999; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
-
-  .loading { text-align: center; padding: 24px; color: var(--text2); font-size: 14px; }
-  .spinner {
-    display: inline-block;
-    width: 20px; height: 20px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin-bottom: 8px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
   .progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 2px;
-    transition: width 0.4s ease;
-    width: 0%;
-  }
-
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
   ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 </style>
 </head>
@@ -312,15 +83,11 @@
 
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-<div class="card" id="stepManager">
+<div class="card">
   <div class="card-title">01 · 매니저 선택</div>
   <div class="manager-grid">
-    <button class="manager-btn" onclick="selectManager('이성문', this)">
-      <span class="icon">👤</span>이성문
-    </button>
-    <button class="manager-btn" onclick="selectManager('윤종수', this)">
-      <span class="icon">👤</span>윤종수
-    </button>
+    <button class="manager-btn" onclick="selectManager('이성문', this)"><span class="icon">👤</span>이성문</button>
+    <button class="manager-btn" onclick="selectManager('윤종수', this)"><span class="icon">👤</span>윤종수</button>
   </div>
 </div>
 
@@ -328,52 +95,25 @@
   <div class="card-title">02 · 병원 선택</div>
   <div class="filter-row" id="filterRow"></div>
   <input type="text" class="search-box" placeholder="🔍 병원명 검색..." oninput="filterHospitals(this.value)" id="searchInput">
-  <div class="hospital-list" id="hospitalList">
-    <div class="loading"><div class="spinner"></div><br>불러오는 중...</div>
-  </div>
+  <div class="hospital-list" id="hospitalList"></div>
   <div class="selected-hospital" id="selectedHospitalBox">
-    <div>
-      <div class="name" id="selectedName"></div>
-      <div class="meta" id="selectedMeta"></div>
-    </div>
+    <div><div class="name" id="selectedName"></div><div class="meta" id="selectedMeta"></div></div>
     <button class="change-btn" onclick="changeHospital()">변경</button>
   </div>
 </div>
 
 <div class="card form-section" id="stepForm">
   <div class="section-label">기본 정보</div>
-  <div class="field">
-    <label>방문일 <span class="req">*</span></label>
-    <input type="date" id="visitDate">
-  </div>
-
+  <div class="field"><label>방문일 <span class="req">*</span></label><input type="date" id="visitDate"></div>
   <hr class="divider">
   <div class="section-label">운영 현황</div>
-
-  <div class="field">
-    <label>현재 미화 운영 방식</label>
-    <textarea id="cleaningMethod" placeholder="예) 자체 직원 운영, 외주 업체 사용 등"></textarea>
-  </div>
-  <div class="field">
-    <label>서비스 주기</label>
-    <input type="text" id="serviceCycle" placeholder="예) 주 2회, 매일 등">
-  </div>
-  <div class="field">
-    <label>서비스 요금</label>
-    <input type="text" id="serviceFee" placeholder="예) 월 150만원">
-  </div>
-  <div class="field">
-    <label>평수</label>
-    <input type="text" id="area" placeholder="예) 50평">
-  </div>
-  <div class="field">
-    <label>화장실 유/무 및 갯수</label>
-    <input type="text" id="restroom" placeholder="예) 있음 2개">
-  </div>
-
+  <div class="field"><label>현재 미화 운영 방식</label><textarea id="cleaningMethod" placeholder="예) 자체 직원 운영, 외주 업체 사용 등"></textarea></div>
+  <div class="field"><label>서비스 주기</label><input type="text" id="serviceCycle" placeholder="예) 주 2회, 매일 등"></div>
+  <div class="field"><label>서비스 요금</label><input type="text" id="serviceFee" placeholder="예) 월 150만원"></div>
+  <div class="field"><label>평수</label><input type="text" id="area" placeholder="예) 50평"></div>
+  <div class="field"><label>화장실 유/무 및 갯수</label><input type="text" id="restroom" placeholder="예) 있음 2개"></div>
   <hr class="divider">
   <div class="section-label">추가 확인</div>
-
   <div class="field">
     <label>커피머신 및 간단 스낵 유무</label>
     <div class="radio-group" id="coffeeMachineGroup">
@@ -397,180 +137,142 @@
       <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '미정')">미정</button>
     </div>
   </div>
-
   <button class="submit-btn" onclick="submitForm()" id="submitBtn">✅ 제출하기</button>
 </div>
 
-<div class="toast" id="toast">✓ 저장 완료!</div>
+<div class="toast" id="toast"></div>
 
 <script>
 const API_URL = "https://script.google.com/a/macros/koreaspacedata.com/s/AKfycbxRPowt8DqSKuNtciaUbG6cMKvItf5EZz9rJyPFCD2B_3D1FsJLASnEtfLX99x1TcYG/exec";
 
-let selectedManager = null;
-let selectedHospital = null;
-let allHospitals = [];
-let radioValues = {};
-let activeFilter = "전체";
+const HOSPITALS = {"이성문":[{"name":"승기배내과의원","district":"내과","station":"교대역"},{"name":"모커리한방병원 강남점","district":"한방병원","station":"교대역"},{"name":"서울이즈정형외과의원","district":"정형외과","station":"교대역"},{"name":"서울365mc지방흡입병원","district":"일반의원","station":"교대역"},{"name":"연세위드이비인후과의원","district":"이비인후과","station":"교대역"},{"name":"윤건호엔도내과의원","district":"내과","station":"교대역"},{"name":"강한피부과의원 교대점","district":"피부과","station":"교대역"},{"name":"예미안치과","district":"치과","station":"교대역"},{"name":"서울크리스탈의원","district":"피부과","station":"교대역"},{"name":"내인생치과의원","district":"치과","station":"교대역"},{"name":"바른이비인후과의원","district":"이비인후과","station":"교대역"},{"name":"정직한내과의원","district":"내과","station":"교대역"},{"name":"서울365mc람스병원","district":"일반의원","station":"교대역"},{"name":"연이비인후과의원","district":"이비인후과","station":"교대역"},{"name":"다시봄안과의원","district":"안과","station":"교대역"},{"name":"이화내과의원","district":"내과","station":"교대역"},{"name":"MCG치과","district":"치과","station":"교대역"},{"name":"최병호신경정신과의원","district":"정신건강의학과","station":"교대역"},{"name":"반듯한정형외과의원 교대역점","district":"정형외과","station":"교대역"},{"name":"양철우내과의원","district":"내과","station":"교대역"},{"name":"교대연세마취통증의학과의원","district":"정형외과","station":"교대역"},{"name":"연세굿초이스정형외과의원","district":"정형외과","station":"교대역"},{"name":"서초리한산부인과의원","district":"산부인과","station":"교대역"},{"name":"연세서울비뇨의학과의원","district":"비뇨기과","station":"교대역"},{"name":"타임리스피부과의원 교대점","district":"피부과","station":"교대역"},{"name":"서초바른내과","district":"내과","station":"교대역"},{"name":"아나파신경과","district":"신경과","station":"교대역"},{"name":"블랑쉬형치과의원","district":"치과","station":"교대역"},{"name":"애플치과의원","district":"치과","station":"교대역"},{"name":"케이에스치과의원","district":"치과","station":"교대역"},{"name":"에세이피부과의원","district":"피부과","station":"교대역"},{"name":"안명덕안과의원","district":"안과","station":"교대역"},{"name":"이범용 정신건강의학과의원","district":"정신건강의학과","station":"교대역"},{"name":"연세리즈의원","district":"성형외과","station":"교대역"},{"name":"민도준류우마내과의원","district":"내과","station":"교대역"},{"name":"호움산부인과의원","district":"산부인과","station":"교대역"},{"name":"연세크라운비뇨의학과의원","district":"비뇨기과","station":"교대역"},{"name":"동화산부인과의원","district":"산부인과","station":"교대역"},{"name":"서울순치과의원","district":"치과","station":"교대역"},{"name":"브라운아이성형외과","district":"성형외과","station":"교대역"},{"name":"좋은얼굴삼풍치과의원","district":"치과","station":"교대역"},{"name":"이음하지외과의원","district":"외과","station":"교대역"},{"name":"하이맵의원","district":"일반의원","station":"교대역"},{"name":"구현남안과의원","district":"안과","station":"교대역"},{"name":"이롬치과의원","district":"치과","station":"교대역"},{"name":"아이디병원","district":"성형외과","station":"신사역"},{"name":"에스앤유안과의원","district":"안과","station":"신사역"},{"name":"플란치과의원 강남점","district":"치과","station":"신사역"},{"name":"휴먼영상의학과의원","district":"영상의학과","station":"신사역"},{"name":"하이안과","district":"안과","station":"신사역"},{"name":"비아이오성형외과","district":"성형외과","station":"신사역"},{"name":"더원서울안과의원","district":"안과","station":"신사역"},{"name":"강남서연성형외과의원","district":"성형외과","station":"신사역"},{"name":"리팅성형외과의원 서울점","district":"성형외과","station":"신사역"},{"name":"오체안성형외과의원 신사점","district":"성형외과","station":"신사역"},{"name":"팽팽의원","district":"피부과","station":"신사역"},{"name":"그레이스성형외과의원","district":"성형외과","station":"신사역"},{"name":"닥터홈즈의원","district":"피부과","station":"신사역"},{"name":"아이레그의원","district":"일반의원","station":"신사역"},{"name":"아이디병원치과","district":"치과","station":"신사역"},{"name":"그린몰의원","district":"일반의원","station":"신사역"},{"name":"아이엠씨강남의원","district":"내과","station":"신사역"},{"name":"헤스티아 여성의원 신사본점","district":"산부인과","station":"신사역"},{"name":"감동비뇨기과 강남점","district":"비뇨기과","station":"신사역"},{"name":"아이루미성형외과의원","district":"성형외과","station":"신사역"},{"name":"임지연의원","district":"일반의원","station":"신사역"},{"name":"쥬얼리성형외과의원","district":"성형외과","station":"신사역"},{"name":"모아만의원","district":"일반의원","station":"신사역"},{"name":"더힐피부과의원 신사본점","district":"피부과","station":"신사역"},{"name":"청담여신성형외과의원","district":"성형외과","station":"신사역"},{"name":"압구정안과의원","district":"안과","station":"신사역"},{"name":"신상성형외과의원","district":"성형외과","station":"신사역"},{"name":"111의원","district":"성형외과","station":"신사역"},{"name":"모바른의원","district":"일반의원","station":"신사역"},{"name":"닥터스피부과의원 신사점","district":"피부과","station":"신사역"},{"name":"제이티성형외과의원","district":"성형외과","station":"신사역"},{"name":"아이디피부과","district":"피부과","station":"신사역"},{"name":"임이석테마피부과의원","district":"피부과","station":"신사역"},{"name":"퍼펙트비뇨의학과의원","district":"비뇨기과","station":"신사역"},{"name":"아이니크성형외과","district":"성형외과","station":"신사역"},{"name":"오체안피부과의원 신사점","district":"피부과","station":"신사역"},{"name":"리프톤피부과의원","district":"피부과","station":"신사역"},{"name":"일퍼센트성형외과의원","district":"성형외과","station":"신사역"},{"name":"밴스의원 신사점","district":"성형외과","station":"신사역"},{"name":"서울센텀치과의원 신사역","district":"치과","station":"신사역"},{"name":"아이큐성형외과의원","district":"성형외과","station":"신사역"},{"name":"신사형통정형외과의원","district":"정형외과","station":"신사역"},{"name":"연세스탠다정형외과의원","district":"정형외과","station":"신사역"},{"name":"티에스성형외과","district":"성형외과","station":"신사역"},{"name":"세연마취통증의학과의원","district":"통증클리닉","station":"신사역"}],"윤종수":[{"name":"하늘안과의원","district":"안과","station":"신논현역"},{"name":"똑똑플란트치과의원","district":"치과","station":"신논현역"},{"name":"고르다치과의원 강남점","district":"치과","station":"신논현역"},{"name":"이지함피부과의원 강남점","district":"피부과","station":"신논현역"},{"name":"제애정형외과","district":"정형외과","station":"신논현역"},{"name":"강남성모원안과의원","district":"안과","station":"신논현역"},{"name":"강남브랜드안과의원 강남점","district":"안과","station":"신논현역"},{"name":"김호연내과의원","district":"내과","station":"신논현역"},{"name":"뷰성형외과의원","district":"성형외과","station":"신논현역"},{"name":"브라운성형외과의원","district":"성형외과","station":"신논현역"},{"name":"예쁨주의쁨의원 신논현점","district":"피부과","station":"신논현역"},{"name":"라이브치과병원","district":"치과","station":"신논현역"},{"name":"플레저성형외과의원","district":"성형외과","station":"신논현역"},{"name":"원데이치과 제1관","district":"치과","station":"신논현역"},{"name":"사적인아름다움 지유의원 강남본점","district":"피부과","station":"신논현역"},{"name":"힐링안과의원","district":"안과","station":"신논현역"},{"name":"스탠탑비뇨의학과의원","district":"비뇨기과","station":"신논현역"},{"name":"수연세안과의원","district":"안과","station":"신논현역"},{"name":"나인피부과의원 강남점","district":"피부과","station":"신논현역"},{"name":"세라미크의원 강남","district":"피부과","station":"신논현역"},{"name":"루센트치과의원","district":"치과","station":"신논현역"},{"name":"데이뷰의원 강남점","district":"피부과","station":"신논현역"},{"name":"땡큐성형외과의원","district":"성형외과","station":"신논현역"},{"name":"일미리성형외과의원","district":"성형외과","station":"신논현역"},{"name":"강남새로치과의원","district":"치과","station":"신논현역"},{"name":"CU클린업피부과의원 강남점","district":"피부과","station":"신논현역"},{"name":"모던스탠다드의원","district":"피부과","station":"신논현역"},{"name":"강남서울외과의원","district":"외과","station":"신논현역"},{"name":"세니아클리닉 1관","district":"피부과","station":"신논현역"},{"name":"기린성형외과의원","district":"성형외과","station":"신논현역"},{"name":"우아성형외과의원","district":"성형외과","station":"신논현역"},{"name":"삼사오성형외과의원","district":"성형외과","station":"신논현역"},{"name":"뮤즈클리닉 강남점 본관","district":"피부과","station":"신논현역"},{"name":"강남애프터치과의원","district":"치과","station":"신논현역"},{"name":"시아의원","district":"피부과","station":"신논현역"},{"name":"연세거평의원","district":"일반의원","station":"신논현역"},{"name":"사랑이아프니구강악안면외과치과의원","district":"치과","station":"신논현역"},{"name":"페이지랩의원 신논현점","district":"성형외과","station":"신논현역"},{"name":"신논현톡스앤필의원","district":"피부과","station":"신논현역"},{"name":"세이예스의원","district":"성형외과","station":"신논현역"},{"name":"미호성형외과의원","district":"성형외과","station":"신논현역"},{"name":"메이드유의원 강남본점","district":"피부과","station":"신논현역"},{"name":"이브성형외과의원","district":"성형외과","station":"신논현역"},{"name":"별성형외과의원","district":"성형외과","station":"신논현역"},{"name":"앤드성형외과의원","district":"성형외과","station":"신논현역"},{"name":"CNP차앤박피부과 압구정점","district":"피부과","station":"압구정역"},{"name":"두발로병원","district":"정형외과","station":"압구정역"},{"name":"호산여성병원","district":"산부인과","station":"압구정역"},{"name":"김성윤내과의원","district":"내과","station":"압구정역"},{"name":"압구정더모의원","district":"피부과","station":"압구정역"},{"name":"팝성형외과의원","district":"성형외과","station":"압구정역"},{"name":"아몬드성형외과의원 압구정점","district":"성형외과","station":"압구정역"},{"name":"모제림성형외과의원","district":"성형외과","station":"압구정역"},{"name":"압구정드림성형외과","district":"성형외과","station":"압구정역"},{"name":"압구정에스앤비안과의원","district":"안과","station":"압구정역"},{"name":"더성형외과의원","district":"성형외과","station":"압구정역"},{"name":"연세더바로의원","district":"정형외과","station":"압구정역"},{"name":"압구정서울성형외과의원","district":"성형외과","station":"압구정역"},{"name":"글로비성형외과의원","district":"성형외과","station":"압구정역"},{"name":"드림성형외과의원","district":"성형외과","station":"압구정역"},{"name":"나인비뇨기과의원","district":"비뇨기과","station":"압구정역"},{"name":"리앤채움의원","district":"피부과","station":"압구정역"},{"name":"압구정민치과의원","district":"치과","station":"압구정역"},{"name":"바바성형외과의원","district":"성형외과","station":"압구정역"},{"name":"압구정튠의원","district":"피부과","station":"압구정역"},{"name":"에스원성형외과의원","district":"성형외과","station":"압구정역"},{"name":"노블케어요양병원 1관","district":"노인,요양병원","station":"압구정역"},{"name":"VS라인의원","district":"피부과","station":"압구정역"},{"name":"JK성형외과의원","district":"성형외과","station":"압구정역"},{"name":"연세바로치과의원","district":"치과","station":"압구정역"},{"name":"압구정현대이비인후과의원","district":"이비인후과","station":"압구정역"},{"name":"프로필성형외과의원","district":"성형외과","station":"압구정역"},{"name":"압구정페이스라인 성형외과의원","district":"성형외과","station":"압구정역"},{"name":"톡스앤필의원 압구정점","district":"피부과","station":"압구정역"},{"name":"미래이비인후과의원","district":"이비인후과","station":"압구정역"},{"name":"리디안의원","district":"성형외과","station":"압구정역"},{"name":"제이비미소 이비인후과의원","district":"이비인후과","station":"압구정역"},{"name":"바롬치과의원","district":"치과","station":"압구정역"},{"name":"굿모나의원","district":"피부과","station":"압구정역"},{"name":"서울브레인신경과의원","district":"신경과","station":"압구정역"},{"name":"라움성형외과의원","district":"성형외과","station":"압구정역"},{"name":"두한성형외과","district":"성형외과","station":"압구정역"},{"name":"아이러브안과의원","district":"안과","station":"압구정역"},{"name":"앵글치과의원","district":"치과","station":"압구정역"},{"name":"마침표성형외과의원","district":"성형외과","station":"압구정역"},{"name":"아르나의원","district":"일반의원","station":"압구정역"},{"name":"코코성형외과의원","district":"성형외과","station":"압구정역"},{"name":"탑페이스성형외과의원","district":"성형외과","station":"압구정역"},{"name":"SL안과의원","district":"안과","station":"압구정역"},{"name":"에버피부과의원","district":"피부과","station":"압구정역"},{"name":"디에이성형외과의원","district":"성형외과","station":"강남역"},{"name":"밝은성모안과의원","district":"안과","station":"강남역"},{"name":"하루플란트치과의원","district":"치과","station":"강남역"},{"name":"똑똑플란트치과의원","district":"치과","station":"강남역"},{"name":"이지함피부과의원 강남점","district":"피부과","station":"강남역"},{"name":"에이비성형외과의원","district":"성형외과","station":"강남역"},{"name":"모리스의원","district":"피부과","station":"강남역"},{"name":"원진성형외과의원","district":"성형외과","station":"강남역"},{"name":"르샤인의원","district":"일반의원","station":"강남역"},{"name":"눈에미소안과의원","district":"안과","station":"강남역"},{"name":"비앤빛안과의원","district":"안과","station":"강남역"},{"name":"밝음나눔안과의원 강남점","district":"안과","station":"강남역"},{"name":"오브제성형외과의원","district":"성형외과","station":"강남역"},{"name":"강남그랜드안과의원","district":"안과","station":"강남역"},{"name":"지에스안과의원","district":"안과","station":"강남역"},{"name":"강남스마일안과의원","district":"안과","station":"강남역"},{"name":"여름의원","district":"피부과","station":"강남역"},{"name":"원치과의원","district":"치과","station":"강남역"},{"name":"리엔장성형외과의원 피부과","district":"성형외과","station":"강남역"},{"name":"젊어지는치과의원 강남역","district":"치과","station":"강남역"},{"name":"삼성드림이비인후과의원 강남점","district":"이비인후과","station":"강남역"},{"name":"글로리서울안과의원","district":"안과","station":"강남역"},{"name":"강남새로치과의원","district":"치과","station":"강남역"},{"name":"강남이오스안과의원","district":"안과","station":"강남역"},{"name":"CU클린업피부과의원 강남점","district":"피부과","station":"강남역"},{"name":"아이리움안과의원","district":"안과","station":"강남역"},{"name":"맥스웰피부과의원 강남점","district":"피부과","station":"강남역"},{"name":"퍼스트삼성안과","district":"안과","station":"강남역"},{"name":"강남클리어치과의원","district":"치과","station":"강남역"},{"name":"아비쥬의원 강남신관","district":"피부과","station":"강남역"},{"name":"톡스앤필의원 강남본점","district":"피부과","station":"강남역"},{"name":"강남레옹치과의원","district":"치과","station":"강남역"},{"name":"블리비의원 강남역점","district":"피부과","station":"강남역"},{"name":"강남루덴치과의원","district":"치과","station":"강남역"},{"name":"드림성모안과의원","district":"안과","station":"강남역"},{"name":"강남밴스의원","district":"피부과","station":"강남역"},{"name":"아비쥬의원 강남본관","district":"피부과","station":"강남역"},{"name":"메디스캔의원","district":"내과","station":"강남역"},{"name":"연세코앤이비인후과의원","district":"이비인후과","station":"강남역"},{"name":"화이트드림치과의원 강남","district":"치과","station":"강남역"},{"name":"클리어서울안과의원","district":"안과","station":"강남역"},{"name":"강남브이에스라인의원","district":"피부과","station":"강남역"},{"name":"진성형외과의원","district":"성형외과","station":"강남역"},{"name":"세니아클리닉 1관","district":"피부과","station":"강남역"},{"name":"온리프성형외과의원","district":"성형외과","station":"강남역"}]};
 
-function jsonp(url, callbackName, callback) {
-  const script = document.createElement('script');
-  window[callbackName] = function(data) {
-    callback(data);
-    delete window[callbackName];
-    document.body.removeChild(script);
-  };
-  script.src = url + '&callback=' + callbackName;
-  script.onerror = function() {
-    document.getElementById('hospitalList').innerHTML = '<div class="loading">⚠️ 데이터 로드 실패. 새로고침 해주세요.</div>';
-    document.body.removeChild(script);
-  };
-  document.body.appendChild(script);
-}
+let selectedManager=null, selectedHospital=null, allHospitals=[], radioValues={}, activeFilter="전체";
 
 function updateProgress() {
-  let pct = 10;
-  if (selectedManager) pct = 40;
-  if (selectedHospital) pct = 70;
-  if (document.getElementById('visitDate').value) pct = 100;
-  document.getElementById('progressFill').style.width = pct + '%';
+  let p=10;
+  if(selectedManager) p=40;
+  if(selectedHospital) p=70;
+  if(document.getElementById('visitDate').value) p=100;
+  document.getElementById('progressFill').style.width=p+'%';
 }
 
 function selectManager(name, btn) {
-  selectedManager = name;
-  document.querySelectorAll('.manager-btn').forEach(b => b.classList.remove('active'));
+  selectedManager=name;
+  document.querySelectorAll('.manager-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  allHospitals=HOSPITALS[name]||[];
+  buildFilters(allHospitals);
+  renderHospitals(allHospitals);
   document.getElementById('stepHospital').classList.add('visible');
-  loadHospitals(name);
   updateProgress();
-  setTimeout(() => document.getElementById('stepHospital').scrollIntoView({behavior:'smooth', block:'start'}), 100);
-}
-
-function loadHospitals(manager) {
-  document.getElementById('hospitalList').innerHTML = '<div class="loading"><div class="spinner"></div><br>병원 목록 불러오는 중...</div>';
-  const url = `${API_URL}?action=getHospitals&manager=${encodeURIComponent(manager)}`;
-  jsonp(url, 'handleHospitals_' + Date.now(), function(data) {
-    allHospitals = data;
-    buildFilters(data);
-    renderHospitals(data);
-  });
+  setTimeout(()=>document.getElementById('stepHospital').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
 function buildFilters(hospitals) {
-  const stations = ['전체', ...new Set(hospitals.map(h => h.station))];
-  const row = document.getElementById('filterRow');
-  row.innerHTML = stations.map(s =>
-    `<button class="filter-chip ${s === '전체' ? 'active' : ''}" onclick="applyFilter('${s}', this)">${s}</button>`
+  const stations=['전체',...new Set(hospitals.map(h=>h.station))];
+  activeFilter='전체';
+  document.getElementById('filterRow').innerHTML=stations.map(s=>
+    `<button class="filter-chip ${s==='전체'?'active':''}" onclick="applyFilter('${s}',this)">${s}</button>`
   ).join('');
 }
 
 function applyFilter(station, el) {
-  activeFilter = station;
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  activeFilter=station;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   filterHospitals(document.getElementById('searchInput').value);
 }
 
 function filterHospitals(query) {
-  let filtered = allHospitals;
-  if (activeFilter !== '전체') filtered = filtered.filter(h => h.station === activeFilter);
-  if (query) filtered = filtered.filter(h => h.name.includes(query));
-  renderHospitals(filtered);
+  let f=allHospitals;
+  if(activeFilter!=='전체') f=f.filter(h=>h.station===activeFilter);
+  if(query) f=f.filter(h=>h.name.includes(query));
+  renderHospitals(f);
 }
 
 function renderHospitals(hospitals) {
-  const list = document.getElementById('hospitalList');
-  if (!hospitals.length) {
-    list.innerHTML = '<div class="loading">검색 결과가 없어요</div>';
-    return;
-  }
-  list.innerHTML = hospitals.map(h => `
+  const list=document.getElementById('hospitalList');
+  if(!hospitals.length){list.innerHTML='<div style="padding:20px;text-align:center;color:var(--text2);font-size:13px;">검색 결과가 없어요</div>';return;}
+  list.innerHTML=hospitals.map(h=>`
     <div class="hospital-item" onclick='selectHospital(${JSON.stringify(h)})'>
-      <div>
-        <div class="hospital-name">${h.name}</div>
-        <div class="hospital-meta">${h.station} · ${h.district}</div>
-      </div>
+      <div><div class="hospital-name">${h.name}</div><div class="hospital-meta">${h.station} · ${h.district}</div></div>
       <span class="hospital-badge">${h.district}</span>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function selectHospital(hospital) {
-  selectedHospital = hospital;
-  document.getElementById('selectedName').textContent = hospital.name;
-  document.getElementById('selectedMeta').textContent = `${hospital.station} · ${hospital.district}`;
+function selectHospital(h) {
+  selectedHospital=h;
+  document.getElementById('selectedName').textContent=h.name;
+  document.getElementById('selectedMeta').textContent=`${h.station} · ${h.district}`;
   document.getElementById('selectedHospitalBox').classList.add('visible');
-  document.getElementById('hospitalList').style.display = 'none';
-  document.getElementById('searchInput').style.display = 'none';
-  document.getElementById('filterRow').style.display = 'none';
+  document.getElementById('hospitalList').style.display='none';
+  document.getElementById('searchInput').style.display='none';
+  document.getElementById('filterRow').style.display='none';
   document.getElementById('stepForm').classList.add('visible');
   updateProgress();
-  setTimeout(() => document.getElementById('stepForm').scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  setTimeout(()=>document.getElementById('stepForm').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
 function changeHospital() {
-  selectedHospital = null;
+  selectedHospital=null;
   document.getElementById('selectedHospitalBox').classList.remove('visible');
-  document.getElementById('hospitalList').style.display = 'block';
-  document.getElementById('searchInput').style.display = 'block';
-  document.getElementById('filterRow').style.display = 'flex';
+  document.getElementById('hospitalList').style.display='block';
+  document.getElementById('searchInput').style.display='block';
+  document.getElementById('filterRow').style.display='flex';
   document.getElementById('stepForm').classList.remove('visible');
   filterHospitals('');
 }
 
 function selectRadio(groupId, el, value) {
-  document.querySelectorAll(`#${groupId} .radio-btn`).forEach(b => b.classList.remove('active'));
+  document.querySelectorAll(`#${groupId} .radio-btn`).forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  radioValues[groupId] = value;
+  radioValues[groupId]=value;
 }
 
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
 function submitForm() {
-  if (!selectedManager || !selectedHospital) { showToast('⚠️ 매니저와 병원을 선택해주세요'); return; }
-  if (!document.getElementById('visitDate').value) { showToast('⚠️ 방문일을 입력해주세요'); return; }
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = '저장 중...';
-
-  const params = new URLSearchParams({
-    action: 'save',
-    manager: selectedManager,
-    hospital: selectedHospital.name,
-    visitDate: document.getElementById('visitDate').value,
-    cleaningMethod: document.getElementById('cleaningMethod').value,
-    serviceCycle: document.getElementById('serviceCycle').value,
-    serviceFee: document.getElementById('serviceFee').value,
-    area: document.getElementById('area').value,
-    restroom: document.getElementById('restroom').value,
-    coffeeMachine: radioValues['coffeeMachineGroup'] || '',
-    quotation: radioValues['quotationGroup'] || '',
-    irregular: radioValues['irregularGroup'] || '',
+  if(!selectedManager||!selectedHospital){showToast('⚠️ 매니저와 병원을 선택해주세요');return;}
+  if(!document.getElementById('visitDate').value){showToast('⚠️ 방문일을 입력해주세요');return;}
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent='저장 중...';
+  const params=new URLSearchParams({
+    action:'save', manager:selectedManager, hospital:selectedHospital.name,
+    visitDate:document.getElementById('visitDate').value,
+    cleaningMethod:document.getElementById('cleaningMethod').value,
+    serviceCycle:document.getElementById('serviceCycle').value,
+    serviceFee:document.getElementById('serviceFee').value,
+    area:document.getElementById('area').value,
+    restroom:document.getElementById('restroom').value,
+    coffeeMachine:radioValues['coffeeMachineGroup']||'',
+    quotation:radioValues['quotationGroup']||'',
+    irregular:radioValues['irregularGroup']||'',
   });
-
-  const cbName = 'handleSave_' + Date.now();
-  jsonp(`${API_URL}?${params.toString()}`, cbName, function(data) {
-    if (data.success) {
+  const cbName='cb_'+Date.now();
+  const script=document.createElement('script');
+  window[cbName]=function(data){
+    if(data.success){
       showToast('✓ 저장 완료!');
-      document.getElementById('visitDate').value = '';
-      document.getElementById('cleaningMethod').value = '';
-      document.getElementById('serviceCycle').value = '';
-      document.getElementById('serviceFee').value = '';
-      document.getElementById('area').value = '';
-      document.getElementById('restroom').value = '';
-      document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
-      radioValues = {};
-    } else {
-      showToast('⚠️ 저장 실패. 다시 시도해주세요.');
-    }
-    btn.disabled = false;
-    btn.textContent = '✅ 제출하기';
-  });
+      ['cleaningMethod','serviceCycle','serviceFee','area','restroom'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('visitDate').value='';
+      document.querySelectorAll('.radio-btn').forEach(b=>b.classList.remove('active'));
+      radioValues={};
+    } else { showToast('⚠️ 저장 실패. 다시 시도해주세요.'); }
+    btn.disabled=false; btn.textContent='✅ 제출하기';
+    delete window[cbName]; document.body.removeChild(script);
+  };
+  script.onerror=function(){
+    showToast('⚠️ 저장 실패. 다시 시도해주세요.');
+    btn.disabled=false; btn.textContent='✅ 제출하기';
+    delete window[cbName]; document.body.removeChild(script);
+  };
+  script.src=`${API_URL}?${params.toString()}&callback=${cbName}`;
+  document.body.appendChild(script);
 }
 
 document.getElementById('visitDate').addEventListener('change', updateProgress);
