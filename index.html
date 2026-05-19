@@ -212,8 +212,12 @@ function switchTab(tab, btn) {
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-'+tab).classList.add('active');
-  if(tab==='map' && selectedManager && !mapInitialized) {
-    initMap();
+  if(tab==='map') {
+    if(selectedManager && !mapInitialized) {
+      setTimeout(initMap, 150);
+    } else if(kakaoMap) {
+      setTimeout(()=>kakaoMap.relayout(), 50);
+    }
   }
 }
 
