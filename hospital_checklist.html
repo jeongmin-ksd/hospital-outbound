@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>병원 영업 체크리스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222534;
+    --border: #2e3247;
+    --accent: #4f7cff;
+    --accent2: #7c5cff;
+    --text: #e8eaf0;
+    --text2: #8b90a8;
+    --success: #34d399;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-top: 16px;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .header p {
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 6px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* Manager Selection */
+  .manager-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .manager-btn {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text2);
+    font-family: 'Pretendard', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .manager-btn:hover { border-color: var(--accent); color: var(--text); }
+  .manager-btn.active {
+    border-color: var(--accent);
+    background: rgba(79, 124, 255, 0.12);
+    color: var(--accent);
+  }
+
+  .manager-btn .icon { font-size: 22px; display: block; margin-bottom: 6px; }
+
+  /* Hospital Select */
+  .hospital-section { display: none; }
+  .hospital-section.visible { display: block; }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .filter-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .filter-chip:hover, .filter-chip.active {
+    background: rgba(79, 124, 255, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .search-box {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'Pretendard', sans-serif;
+    font-size: 14px;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-box:focus { border-color: var(--accent); }
+  .search-box::placeholder { color: var(--text2); }
+
+  .hospital-list {
+    max-height: 240px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .hospital-item {
+    padding: 12px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .hospital-item:last-child { border-bottom: none; }
+  .hospital-item:hover { background: var(--surface2); }
+  .hospital-item.selected { background: rgba(79, 124, 255, 0.1); }
+
+  .hospital-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .hospital-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .hospital-badge {
+    font-size: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 7px;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  .selected-hospital {
+    background: rgba(79, 124, 255, 0.1);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .selected-hospital.visible { display: flex; }
+  .selected-hospital .name { font-size: 15px; font-weight: 600; color: var(--accent); }
+  .selected-hospital .meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .change-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 10px;
+    color: var(--text2);
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Pretendard', sans-serif;
+    transition: all 0.2s;
+  }
+  .change-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Form Section */
+  .form-section { display: none; }
+  .form-section.visible { display: block; }
+
+  .field { margin-bottom: 16px; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 7px;
+  }
+
+  .field label span.req { color: var(--accent); margin-left: 2px; }
+
+  .field input, .field textarea, .field select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'Pretendard', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: var(--accent);
+  }
+
+  .field input::placeholder, .field textarea::placeholder { color: var(--text2); }
+
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  .radio-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .radio-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .radio-btn:hover { border-color: var(--accent); color: var(--text); }
+  .radio-btn.active {
+    background: rgba(79, 124, 255, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: -0.3px;
+  }
+
+  .submit-btn:hover { opacity: 0.92; }
+  .submit-btn:active { transform: scale(0.99); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--success);
+    color: #0a2a1e;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 30px;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 24px;
+    color: var(--text2);
+    font-size: 14px;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-bottom: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">영업 현장</div>
+  <h1>병원 체크리스트</h1>
+  <p>현장 방문 후 아래 정보를 입력해주세요</p>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- Step 1: Manager -->
+<div class="card" id="stepManager">
+  <div class="card-title">01 · 매니저 선택</div>
+  <div class="manager-grid">
+    <button class="manager-btn" onclick="selectManager('이성문')">
+      <span class="icon">👤</span>이성문
+    </button>
+    <button class="manager-btn" onclick="selectManager('윤종수')">
+      <span class="icon">👤</span>윤종수
+    </button>
+  </div>
+</div>
+
+<!-- Step 2: Hospital -->
+<div class="card hospital-section" id="stepHospital">
+  <div class="card-title">02 · 병원 선택</div>
+
+  <div class="filter-row" id="filterRow"></div>
+  <input type="text" class="search-box" placeholder="🔍 병원명 검색..." oninput="filterHospitals(this.value)" id="searchInput">
+  <div class="hospital-list" id="hospitalList">
+    <div class="loading"><div class="spinner"></div><br>불러오는 중...</div>
+  </div>
+
+  <div class="selected-hospital" id="selectedHospitalBox">
+    <div>
+      <div class="name" id="selectedName"></div>
+      <div class="meta" id="selectedMeta"></div>
+    </div>
+    <button class="change-btn" onclick="changeHospital()">변경</button>
+  </div>
+</div>
+
+<!-- Step 3: Form -->
+<div class="card form-section" id="stepForm">
+  <div class="section-label">기본 정보</div>
+
+  <div class="field">
+    <label>방문일 <span class="req">*</span></label>
+    <input type="date" id="visitDate">
+  </div>
+
+  <hr class="divider">
+  <div class="section-label">운영 현황</div>
+
+  <div class="field">
+    <label>현재 미화 운영 방식</label>
+    <textarea id="cleaningMethod" placeholder="예) 자체 직원 운영, 외주 업체 사용 등"></textarea>
+  </div>
+
+  <div class="field">
+    <label>서비스 주기</label>
+    <input type="text" id="serviceCycle" placeholder="예) 주 2회, 매일 등">
+  </div>
+
+  <div class="field">
+    <label>서비스 요금</label>
+    <input type="text" id="serviceFee" placeholder="예) 월 150만원">
+  </div>
+
+  <div class="field">
+    <label>평수</label>
+    <input type="text" id="area" placeholder="예) 50평">
+  </div>
+
+  <div class="field">
+    <label>화장실 유/무 및 갯수</label>
+    <input type="text" id="restroom" placeholder="예) 있음 2개">
+  </div>
+
+  <hr class="divider">
+  <div class="section-label">추가 확인</div>
+
+  <div class="field">
+    <label>커피머신 및 간단 스낵 유무</label>
+    <div class="radio-group" id="coffeeMachineGroup">
+      <button class="radio-btn" onclick="selectRadio('coffeeMachineGroup', this, '있음')">있음</button>
+      <button class="radio-btn" onclick="selectRadio('coffeeMachineGroup', this, '없음')">없음</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>견적 받아볼 의향</label>
+    <div class="radio-group" id="quotationGroup">
+      <button class="radio-btn" onclick="selectRadio('quotationGroup', this, '있음')">있음</button>
+      <button class="radio-btn" onclick="selectRadio('quotationGroup', this, '없음')">없음</button>
+      <button class="radio-btn" onclick="selectRadio('quotationGroup', this, '미정')">미정</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>비정기 서비스 받아볼 의향</label>
+    <div class="radio-group" id="irregularGroup">
+      <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '있음')">있음</button>
+      <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '없음')">없음</button>
+      <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '미정')">미정</button>
+    </div>
+  </div>
+
+  <button class="submit-btn" onclick="submitForm()" id="submitBtn">✅ 제출하기</button>
+</div>
+
+<div class="toast" id="toast">✓ 저장 완료!</div>
+
+<script>
+const API_URL = "https://script.google.com/a/macros/koreaspacedata.com/s/AKfycbxRPowt8DqSKuNtciaUbG6cMKvItf5EZz9rJyPFCD2B_3D1FsJLASnEtfLX99x1TcYG/exec";
+
+let selectedManager = null;
+let selectedHospital = null;
+let allHospitals = [];
+let radioValues = {};
+let activeFilter = "전체";
+
+function updateProgress() {
+  let pct = 10;
+  if (selectedManager) pct = 40;
+  if (selectedHospital) pct = 70;
+  const filled = document.getElementById('visitDate').value;
+  if (filled) pct = 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function selectManager(name) {
+  selectedManager = name;
+  document.querySelectorAll('.manager-btn').forEach(b => b.classList.remove('active'));
+  event.target.closest('.manager-btn').classList.add('active');
+  document.getElementById('stepHospital').classList.add('visible');
+  loadHospitals(name);
+  updateProgress();
+  setTimeout(() => document.getElementById('stepHospital').scrollIntoView({behavior:'smooth', block:'start'}), 100);
+}
+
+function loadHospitals(manager) {
+  document.getElementById('hospitalList').innerHTML = '<div class="loading"><div class="spinner"></div><br>병원 목록 불러오는 중...</div>';
+
+  fetch(`${API_URL}?action=getHospitals&manager=${encodeURIComponent(manager)}`)
+    .then(r => r.json())
+    .then(data => {
+      allHospitals = data;
+      buildFilters(data);
+      renderHospitals(data);
+    })
+    .catch(() => {
+      document.getElementById('hospitalList').innerHTML = '<div class="loading">⚠️ 데이터 로드 실패. 새로고침 해주세요.</div>';
+    });
+}
+
+function buildFilters(hospitals) {
+  const stations = ['전체', ...new Set(hospitals.map(h => h.station))];
+  const row = document.getElementById('filterRow');
+  row.innerHTML = stations.map(s =>
+    `<button class="filter-chip ${s === '전체' ? 'active' : ''}" onclick="applyFilter('${s}', this)">${s}</button>`
+  ).join('');
+}
+
+function applyFilter(station, el) {
+  activeFilter = station;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const query = document.getElementById('searchInput').value;
+  filterHospitals(query);
+}
+
+function filterHospitals(query) {
+  let filtered = allHospitals;
+  if (activeFilter !== '전체') filtered = filtered.filter(h => h.station === activeFilter);
+  if (query) filtered = filtered.filter(h => h.name.includes(query));
+  renderHospitals(filtered);
+}
+
+function renderHospitals(hospitals) {
+  const list = document.getElementById('hospitalList');
+  if (!hospitals.length) {
+    list.innerHTML = '<div class="loading">검색 결과가 없어요</div>';
+    return;
+  }
+  list.innerHTML = hospitals.map(h => `
+    <div class="hospital-item ${selectedHospital?.name === h.name ? 'selected' : ''}" onclick="selectHospital(${JSON.stringify(h).replace(/"/g, '&quot;')})">
+      <div>
+        <div class="hospital-name">${h.name}</div>
+        <div class="hospital-meta">${h.station} · ${h.district}</div>
+      </div>
+      <span class="hospital-badge">${h.district}</span>
+    </div>
+  `).join('');
+}
+
+function selectHospital(hospital) {
+  selectedHospital = hospital;
+  document.getElementById('selectedName').textContent = hospital.name;
+  document.getElementById('selectedMeta').textContent = `${hospital.station} · ${hospital.district}`;
+  document.getElementById('selectedHospitalBox').classList.add('visible');
+  document.getElementById('hospitalList').style.display = 'none';
+  document.getElementById('searchInput').style.display = 'none';
+  document.getElementById('filterRow').style.display = 'none';
+  document.getElementById('stepForm').classList.add('visible');
+  updateProgress();
+  setTimeout(() => document.getElementById('stepForm').scrollIntoView({behavior:'smooth', block:'start'}), 100);
+}
+
+function changeHospital() {
+  selectedHospital = null;
+  document.getElementById('selectedHospitalBox').classList.remove('visible');
+  document.getElementById('hospitalList').style.display = 'block';
+  document.getElementById('searchInput').style.display = 'block';
+  document.getElementById('filterRow').style.display = 'flex';
+  document.getElementById('stepForm').classList.remove('visible');
+  filterHospitals('');
+}
+
+function selectRadio(groupId, el, value) {
+  document.querySelectorAll(`#${groupId} .radio-btn`).forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  radioValues[groupId] = value;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function submitForm() {
+  if (!selectedManager || !selectedHospital) { showToast('⚠️ 매니저와 병원을 선택해주세요'); return; }
+  if (!document.getElementById('visitDate').value) { showToast('⚠️ 방문일을 입력해주세요'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  const payload = {
+    manager: selectedManager,
+    hospital: selectedHospital.name,
+    visitDate: document.getElementById('visitDate').value,
+    cleaningMethod: document.getElementById('cleaningMethod').value,
+    serviceCycle: document.getElementById('serviceCycle').value,
+    serviceFee: document.getElementById('serviceFee').value,
+    area: document.getElementById('area').value,
+    restroom: document.getElementById('restroom').value,
+    coffeeMachine: radioValues['coffeeMachineGroup'] || '',
+    quotation: radioValues['quotationGroup'] || '',
+    irregular: radioValues['irregularGroup'] || '',
+  };
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(() => {
+    showToast('✓ 저장 완료!');
+    btn.disabled = false;
+    btn.textContent = '✅ 제출하기';
+    // Reset form fields only (keep manager/hospital)
+    document.getElementById('visitDate').value = '';
+    document.getElementById('cleaningMethod').value = '';
+    document.getElementById('serviceCycle').value = '';
+    document.getElementById('serviceFee').value = '';
+    document.getElementById('area').value = '';
+    document.getElementById('restroom').value = '';
+    document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
+    radioValues = {};
+  })
+  .catch(() => {
+    showToast('⚠️ 저장 실패. 다시 시도해주세요.');
+    btn.disabled = false;
+    btn.textContent = '✅ 제출하기';
+  });
+}
+
+document.getElementById('visitDate').addEventListener('change', updateProgress);
+</script>
+</body>
+</html>
