@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>병원 영업 체크리스트</title>
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=92a0d2eaf99febabb9f8d3265970ceda&libraries=services"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -12,11 +13,22 @@
     --border: #2e3247; --accent: #4f7cff; --accent2: #7c5cff;
     --text: #e8eaf0; --text2: #8b90a8; --success: #34d399; --radius: 14px;
   }
-  body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px 16px 60px; }
-  .header { text-align: center; margin-bottom: 32px; padding-top: 16px; }
+  body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0 0 80px; }
+  .header { text-align: center; padding: 24px 16px 16px; }
   .header-badge { display: inline-block; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
   .header h1 { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
   .header p { font-size: 13px; color: var(--text2); margin-top: 6px; }
+
+  /* 탭 네비게이션 */
+  .tab-nav { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .tab-btn { flex: 1; padding: 14px; text-align: center; font-size: 13px; font-weight: 600; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; font-family: 'Pretendard', sans-serif; background: none; border-top: none; border-left: none; border-right: none; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; padding: 16px; }
+  .tab-content.active { display: block; }
+
+  .progress-bar { height: 3px; background: var(--border); margin: 0 16px 16px; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
   .card-title { font-size: 11px; font-weight: 600; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
   .manager-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -24,6 +36,7 @@
   .manager-btn:hover { border-color: var(--accent); color: var(--text); }
   .manager-btn.active { border-color: var(--accent); background: rgba(79,124,255,0.12); color: var(--accent); }
   .manager-btn .icon { font-size: 22px; display: block; margin-bottom: 6px; }
+
   .hospital-section { display: none; }
   .hospital-section.visible { display: block; }
   .filter-row { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
@@ -45,6 +58,7 @@
   .selected-hospital .meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
   .change-btn { background: none; border: 1px solid var(--border); border-radius: 7px; padding: 5px 10px; color: var(--text2); font-size: 11px; cursor: pointer; font-family: 'Pretendard', sans-serif; transition: all 0.2s; }
   .change-btn:hover { border-color: var(--accent); color: var(--accent); }
+
   .form-section { display: none; }
   .form-section.visible { display: block; }
   .field { margin-bottom: 16px; }
@@ -65,10 +79,24 @@
   .submit-btn:hover { opacity: 0.92; }
   .submit-btn:active { transform: scale(0.99); }
   .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--success); color: #0a2a1e; font-size: 14px; font-weight: 600; padding: 12px 24px; border-radius: 30px; transition: transform 0.3s ease; z-index: 999; white-space: nowrap; }
+
+  /* 지도 탭 */
+  .map-manager-info { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 12px; font-size: 13px; color: var(--text2); }
+  .map-manager-info strong { color: var(--accent); }
+  #kakaoMap { width: 100%; height: 420px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  .map-placeholder { width: 100%; height: 420px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text2); font-size: 14px; gap: 8px; }
+  .station-legend { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text2); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* 인포윈도우 커스텀 */
+  .custom-infowindow { background: #1a1d27; border: 1px solid #4f7cff; border-radius: 10px; padding: 10px 14px; min-width: 160px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+  .custom-infowindow .iw-name { font-size: 13px; font-weight: 700; color: #e8eaf0; margin-bottom: 4px; }
+  .custom-infowindow .iw-meta { font-size: 11px; color: #8b90a8; margin-bottom: 8px; }
+  .custom-infowindow .iw-btn { background: #4f7cff; color: white; border: none; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; width: 100%; font-family: 'Pretendard', sans-serif; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--success); color: #0a2a1e; font-size: 14px; font-weight: 600; padding: 12px 24px; border-radius: 30px; transition: transform 0.3s ease; z-index: 9999; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
-  .progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 </style>
@@ -78,66 +106,87 @@
 <div class="header">
   <div class="header-badge">영업 현장</div>
   <h1>병원 체크리스트</h1>
-  <p>현장 방문 후 아래 정보를 입력해주세요</p>
 </div>
 
-<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<!-- 탭 네비게이션 -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('checklist', this)">📋 체크리스트</button>
+  <button class="tab-btn" onclick="switchTab('map', this)">🗺️ 지도 보기</button>
+</div>
 
-<div class="card">
-  <div class="card-title">01 · 매니저 선택</div>
-  <div class="manager-grid">
-    <button class="manager-btn" onclick="selectManager('이성문', this)"><span class="icon">👤</span>이성문</button>
-    <button class="manager-btn" onclick="selectManager('윤종수', this)"><span class="icon">👤</span>윤종수</button>
+<!-- 체크리스트 탭 -->
+<div class="tab-content active" id="tab-checklist">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="card">
+    <div class="card-title">01 · 매니저 선택</div>
+    <div class="manager-grid">
+      <button class="manager-btn" onclick="selectManager('이성문', this)"><span class="icon">👤</span>이성문</button>
+      <button class="manager-btn" onclick="selectManager('윤종수', this)"><span class="icon">👤</span>윤종수</button>
+    </div>
+  </div>
+
+  <div class="card hospital-section" id="stepHospital">
+    <div class="card-title">02 · 병원 선택</div>
+    <div class="filter-row" id="filterRow"></div>
+    <input type="text" class="search-box" placeholder="🔍 병원명 검색..." oninput="filterHospitals(this.value)" id="searchInput">
+    <div class="hospital-list" id="hospitalList"></div>
+    <div class="selected-hospital" id="selectedHospitalBox">
+      <div><div class="name" id="selectedName"></div><div class="meta" id="selectedMeta"></div></div>
+      <button class="change-btn" onclick="changeHospital()">변경</button>
+    </div>
+  </div>
+
+  <div class="card form-section" id="stepForm">
+    <div class="section-label">기본 정보</div>
+    <div class="field"><label>방문일 <span class="req">*</span></label><input type="date" id="visitDate"></div>
+    <hr class="divider">
+    <div class="section-label">운영 현황</div>
+    <div class="field"><label>현재 미화 운영 방식</label><textarea id="cleaningMethod" placeholder="예) 자체 직원 운영, 외주 업체 사용 등"></textarea></div>
+    <div class="field"><label>서비스 주기</label><input type="text" id="serviceCycle" placeholder="예) 주 2회, 매일 등"></div>
+    <div class="field"><label>서비스 요금</label><input type="text" id="serviceFee" placeholder="예) 월 150만원"></div>
+    <div class="field"><label>평수</label><input type="text" id="area" placeholder="예) 50평"></div>
+    <div class="field"><label>화장실 유/무 및 갯수</label><input type="text" id="restroom" placeholder="예) 있음 2개"></div>
+    <hr class="divider">
+    <div class="section-label">추가 확인</div>
+    <div class="field">
+      <label>커피머신 및 간단 스낵 유무</label>
+      <div class="radio-group" id="coffeeMachineGroup">
+        <button class="radio-btn" onclick="selectRadio('coffeeMachineGroup', this, '있음')">있음</button>
+        <button class="radio-btn" onclick="selectRadio('coffeeMachineGroup', this, '없음')">없음</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>견적 받아볼 의향</label>
+      <div class="radio-group" id="quotationGroup">
+        <button class="radio-btn" onclick="selectRadio('quotationGroup', this, '있음')">있음</button>
+        <button class="radio-btn" onclick="selectRadio('quotationGroup', this, '없음')">없음</button>
+        <button class="radio-btn" onclick="selectRadio('quotationGroup', this, '미정')">미정</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>비정기 서비스 받아볼 의향</label>
+      <div class="radio-group" id="irregularGroup">
+        <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '있음')">있음</button>
+        <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '없음')">없음</button>
+        <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '미정')">미정</button>
+      </div>
+    </div>
+  <div class="field">
+    <label>비고</label>
+    <textarea id="memo" placeholder="자유롭게 메모를 남겨주세요"></textarea>
+  </div>
+    <button class="submit-btn" onclick="submitForm()" id="submitBtn">✅ 제출하기</button>
   </div>
 </div>
 
-<div class="card hospital-section" id="stepHospital">
-  <div class="card-title">02 · 병원 선택</div>
-  <div class="filter-row" id="filterRow"></div>
-  <input type="text" class="search-box" placeholder="🔍 병원명 검색..." oninput="filterHospitals(this.value)" id="searchInput">
-  <div class="hospital-list" id="hospitalList"></div>
-  <div class="selected-hospital" id="selectedHospitalBox">
-    <div><div class="name" id="selectedName"></div><div class="meta" id="selectedMeta"></div></div>
-    <button class="change-btn" onclick="changeHospital()">변경</button>
+<!-- 지도 탭 -->
+<div class="tab-content" id="tab-map">
+  <div class="map-manager-info" id="mapManagerInfo">
+    매니저를 선택하면 담당 병원이 지도에 표시됩니다.
   </div>
-</div>
-
-<div class="card form-section" id="stepForm">
-  <div class="section-label">기본 정보</div>
-  <div class="field"><label>방문일 <span class="req">*</span></label><input type="date" id="visitDate"></div>
-  <hr class="divider">
-  <div class="section-label">운영 현황</div>
-  <div class="field"><label>현재 미화 운영 방식</label><textarea id="cleaningMethod" placeholder="예) 자체 직원 운영, 외주 업체 사용 등"></textarea></div>
-  <div class="field"><label>서비스 주기</label><input type="text" id="serviceCycle" placeholder="예) 주 2회, 매일 등"></div>
-  <div class="field"><label>서비스 요금</label><input type="text" id="serviceFee" placeholder="예) 월 150만원"></div>
-  <div class="field"><label>평수</label><input type="text" id="area" placeholder="예) 50평"></div>
-  <div class="field"><label>화장실 유/무 및 갯수</label><input type="text" id="restroom" placeholder="예) 있음 2개"></div>
-  <hr class="divider">
-  <div class="section-label">추가 확인</div>
-  <div class="field">
-    <label>커피머신 및 간단 스낵 유무</label>
-    <div class="radio-group" id="coffeeMachineGroup">
-      <button class="radio-btn" onclick="selectRadio('coffeeMachineGroup', this, '있음')">있음</button>
-      <button class="radio-btn" onclick="selectRadio('coffeeMachineGroup', this, '없음')">없음</button>
-    </div>
-  </div>
-  <div class="field">
-    <label>견적 받아볼 의향</label>
-    <div class="radio-group" id="quotationGroup">
-      <button class="radio-btn" onclick="selectRadio('quotationGroup', this, '있음')">있음</button>
-      <button class="radio-btn" onclick="selectRadio('quotationGroup', this, '없음')">없음</button>
-      <button class="radio-btn" onclick="selectRadio('quotationGroup', this, '미정')">미정</button>
-    </div>
-  </div>
-  <div class="field">
-    <label>비정기 서비스 받아볼 의향</label>
-    <div class="radio-group" id="irregularGroup">
-      <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '있음')">있음</button>
-      <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '없음')">없음</button>
-      <button class="radio-btn" onclick="selectRadio('irregularGroup', this, '미정')">미정</button>
-    </div>
-  </div>
-  <button class="submit-btn" onclick="submitForm()" id="submitBtn">✅ 제출하기</button>
+  <div id="kakaoMap"></div>
+  <div class="station-legend" id="stationLegend"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -147,7 +196,117 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxRPowt8DqSKuNtciaUbG6c
 
 const HOSPITALS = {"이성문":[{"name":"승기배내과의원","district":"내과","station":"교대역"},{"name":"모커리한방병원 강남점","district":"한방병원","station":"교대역"},{"name":"서울이즈정형외과의원","district":"정형외과","station":"교대역"},{"name":"서울365mc지방흡입병원","district":"일반의원","station":"교대역"},{"name":"연세위드이비인후과의원","district":"이비인후과","station":"교대역"},{"name":"윤건호엔도내과의원","district":"내과","station":"교대역"},{"name":"강한피부과의원 교대점","district":"피부과","station":"교대역"},{"name":"예미안치과","district":"치과","station":"교대역"},{"name":"서울크리스탈의원","district":"피부과","station":"교대역"},{"name":"내인생치과의원","district":"치과","station":"교대역"},{"name":"바른이비인후과의원","district":"이비인후과","station":"교대역"},{"name":"정직한내과의원","district":"내과","station":"교대역"},{"name":"서울365mc람스병원","district":"일반의원","station":"교대역"},{"name":"연이비인후과의원","district":"이비인후과","station":"교대역"},{"name":"다시봄안과의원","district":"안과","station":"교대역"},{"name":"이화내과의원","district":"내과","station":"교대역"},{"name":"MCG치과","district":"치과","station":"교대역"},{"name":"최병호신경정신과의원","district":"정신건강의학과","station":"교대역"},{"name":"반듯한정형외과의원 교대역점","district":"정형외과","station":"교대역"},{"name":"양철우내과의원","district":"내과","station":"교대역"},{"name":"교대연세마취통증의학과의원","district":"정형외과","station":"교대역"},{"name":"연세굿초이스정형외과의원","district":"정형외과","station":"교대역"},{"name":"서초리한산부인과의원","district":"산부인과","station":"교대역"},{"name":"연세서울비뇨의학과의원","district":"비뇨기과","station":"교대역"},{"name":"타임리스피부과의원 교대점","district":"피부과","station":"교대역"},{"name":"서초바른내과","district":"내과","station":"교대역"},{"name":"아나파신경과","district":"신경과","station":"교대역"},{"name":"블랑쉬형치과의원","district":"치과","station":"교대역"},{"name":"애플치과의원","district":"치과","station":"교대역"},{"name":"케이에스치과의원","district":"치과","station":"교대역"},{"name":"에세이피부과의원","district":"피부과","station":"교대역"},{"name":"안명덕안과의원","district":"안과","station":"교대역"},{"name":"이범용 정신건강의학과의원","district":"정신건강의학과","station":"교대역"},{"name":"연세리즈의원","district":"성형외과","station":"교대역"},{"name":"민도준류우마내과의원","district":"내과","station":"교대역"},{"name":"호움산부인과의원","district":"산부인과","station":"교대역"},{"name":"연세크라운비뇨의학과의원","district":"비뇨기과","station":"교대역"},{"name":"동화산부인과의원","district":"산부인과","station":"교대역"},{"name":"서울순치과의원","district":"치과","station":"교대역"},{"name":"브라운아이성형외과","district":"성형외과","station":"교대역"},{"name":"좋은얼굴삼풍치과의원","district":"치과","station":"교대역"},{"name":"이음하지외과의원","district":"외과","station":"교대역"},{"name":"하이맵의원","district":"일반의원","station":"교대역"},{"name":"구현남안과의원","district":"안과","station":"교대역"},{"name":"이롬치과의원","district":"치과","station":"교대역"},{"name":"아이디병원","district":"성형외과","station":"신사역"},{"name":"에스앤유안과의원","district":"안과","station":"신사역"},{"name":"플란치과의원 강남점","district":"치과","station":"신사역"},{"name":"휴먼영상의학과의원","district":"영상의학과","station":"신사역"},{"name":"하이안과","district":"안과","station":"신사역"},{"name":"비아이오성형외과","district":"성형외과","station":"신사역"},{"name":"더원서울안과의원","district":"안과","station":"신사역"},{"name":"강남서연성형외과의원","district":"성형외과","station":"신사역"},{"name":"리팅성형외과의원 서울점","district":"성형외과","station":"신사역"},{"name":"오체안성형외과의원 신사점","district":"성형외과","station":"신사역"},{"name":"팽팽의원","district":"피부과","station":"신사역"},{"name":"그레이스성형외과의원","district":"성형외과","station":"신사역"},{"name":"닥터홈즈의원","district":"피부과","station":"신사역"},{"name":"아이레그의원","district":"일반의원","station":"신사역"},{"name":"아이디병원치과","district":"치과","station":"신사역"},{"name":"그린몰의원","district":"일반의원","station":"신사역"},{"name":"아이엠씨강남의원","district":"내과","station":"신사역"},{"name":"헤스티아 여성의원 신사본점","district":"산부인과","station":"신사역"},{"name":"감동비뇨기과 강남점","district":"비뇨기과","station":"신사역"},{"name":"아이루미성형외과의원","district":"성형외과","station":"신사역"},{"name":"임지연의원","district":"일반의원","station":"신사역"},{"name":"쥬얼리성형외과의원","district":"성형외과","station":"신사역"},{"name":"모아만의원","district":"일반의원","station":"신사역"},{"name":"더힐피부과의원 신사본점","district":"피부과","station":"신사역"},{"name":"청담여신성형외과의원","district":"성형외과","station":"신사역"},{"name":"압구정안과의원","district":"안과","station":"신사역"},{"name":"신상성형외과의원","district":"성형외과","station":"신사역"},{"name":"111의원","district":"성형외과","station":"신사역"},{"name":"모바른의원","district":"일반의원","station":"신사역"},{"name":"닥터스피부과의원 신사점","district":"피부과","station":"신사역"},{"name":"제이티성형외과의원","district":"성형외과","station":"신사역"},{"name":"아이디피부과","district":"피부과","station":"신사역"},{"name":"임이석테마피부과의원","district":"피부과","station":"신사역"},{"name":"퍼펙트비뇨의학과의원","district":"비뇨기과","station":"신사역"},{"name":"아이니크성형외과","district":"성형외과","station":"신사역"},{"name":"오체안피부과의원 신사점","district":"피부과","station":"신사역"},{"name":"리프톤피부과의원","district":"피부과","station":"신사역"},{"name":"일퍼센트성형외과의원","district":"성형외과","station":"신사역"},{"name":"밴스의원 신사점","district":"성형외과","station":"신사역"},{"name":"서울센텀치과의원 신사역","district":"치과","station":"신사역"},{"name":"아이큐성형외과의원","district":"성형외과","station":"신사역"},{"name":"신사형통정형외과의원","district":"정형외과","station":"신사역"},{"name":"연세스탠다정형외과의원","district":"정형외과","station":"신사역"},{"name":"티에스성형외과","district":"성형외과","station":"신사역"},{"name":"세연마취통증의학과의원","district":"통증클리닉","station":"신사역"}],"윤종수":[{"name":"하늘안과의원","district":"안과","station":"신논현역"},{"name":"똑똑플란트치과의원","district":"치과","station":"신논현역"},{"name":"고르다치과의원 강남점","district":"치과","station":"신논현역"},{"name":"이지함피부과의원 강남점","district":"피부과","station":"신논현역"},{"name":"제애정형외과","district":"정형외과","station":"신논현역"},{"name":"강남성모원안과의원","district":"안과","station":"신논현역"},{"name":"강남브랜드안과의원 강남점","district":"안과","station":"신논현역"},{"name":"김호연내과의원","district":"내과","station":"신논현역"},{"name":"뷰성형외과의원","district":"성형외과","station":"신논현역"},{"name":"브라운성형외과의원","district":"성형외과","station":"신논현역"},{"name":"예쁨주의쁨의원 신논현점","district":"피부과","station":"신논현역"},{"name":"라이브치과병원","district":"치과","station":"신논현역"},{"name":"플레저성형외과의원","district":"성형외과","station":"신논현역"},{"name":"원데이치과 제1관","district":"치과","station":"신논현역"},{"name":"사적인아름다움 지유의원 강남본점","district":"피부과","station":"신논현역"},{"name":"힐링안과의원","district":"안과","station":"신논현역"},{"name":"스탠탑비뇨의학과의원","district":"비뇨기과","station":"신논현역"},{"name":"수연세안과의원","district":"안과","station":"신논현역"},{"name":"나인피부과의원 강남점","district":"피부과","station":"신논현역"},{"name":"세라미크의원 강남","district":"피부과","station":"신논현역"},{"name":"루센트치과의원","district":"치과","station":"신논현역"},{"name":"데이뷰의원 강남점","district":"피부과","station":"신논현역"},{"name":"땡큐성형외과의원","district":"성형외과","station":"신논현역"},{"name":"일미리성형외과의원","district":"성형외과","station":"신논현역"},{"name":"강남새로치과의원","district":"치과","station":"신논현역"},{"name":"CU클린업피부과의원 강남점","district":"피부과","station":"신논현역"},{"name":"모던스탠다드의원","district":"피부과","station":"신논현역"},{"name":"강남서울외과의원","district":"외과","station":"신논현역"},{"name":"세니아클리닉 1관","district":"피부과","station":"신논현역"},{"name":"기린성형외과의원","district":"성형외과","station":"신논현역"},{"name":"우아성형외과의원","district":"성형외과","station":"신논현역"},{"name":"삼사오성형외과의원","district":"성형외과","station":"신논현역"},{"name":"뮤즈클리닉 강남점 본관","district":"피부과","station":"신논현역"},{"name":"강남애프터치과의원","district":"치과","station":"신논현역"},{"name":"시아의원","district":"피부과","station":"신논현역"},{"name":"연세거평의원","district":"일반의원","station":"신논현역"},{"name":"사랑이아프니구강악안면외과치과의원","district":"치과","station":"신논현역"},{"name":"페이지랩의원 신논현점","district":"성형외과","station":"신논현역"},{"name":"신논현톡스앤필의원","district":"피부과","station":"신논현역"},{"name":"세이예스의원","district":"성형외과","station":"신논현역"},{"name":"미호성형외과의원","district":"성형외과","station":"신논현역"},{"name":"메이드유의원 강남본점","district":"피부과","station":"신논현역"},{"name":"이브성형외과의원","district":"성형외과","station":"신논현역"},{"name":"별성형외과의원","district":"성형외과","station":"신논현역"},{"name":"앤드성형외과의원","district":"성형외과","station":"신논현역"},{"name":"CNP차앤박피부과 압구정점","district":"피부과","station":"압구정역"},{"name":"두발로병원","district":"정형외과","station":"압구정역"},{"name":"호산여성병원","district":"산부인과","station":"압구정역"},{"name":"김성윤내과의원","district":"내과","station":"압구정역"},{"name":"압구정더모의원","district":"피부과","station":"압구정역"},{"name":"팝성형외과의원","district":"성형외과","station":"압구정역"},{"name":"아몬드성형외과의원 압구정점","district":"성형외과","station":"압구정역"},{"name":"모제림성형외과의원","district":"성형외과","station":"압구정역"},{"name":"압구정드림성형외과","district":"성형외과","station":"압구정역"},{"name":"압구정에스앤비안과의원","district":"안과","station":"압구정역"},{"name":"더성형외과의원","district":"성형외과","station":"압구정역"},{"name":"연세더바로의원","district":"정형외과","station":"압구정역"},{"name":"압구정서울성형외과의원","district":"성형외과","station":"압구정역"},{"name":"글로비성형외과의원","district":"성형외과","station":"압구정역"},{"name":"드림성형외과의원","district":"성형외과","station":"압구정역"},{"name":"나인비뇨기과의원","district":"비뇨기과","station":"압구정역"},{"name":"리앤채움의원","district":"피부과","station":"압구정역"},{"name":"압구정민치과의원","district":"치과","station":"압구정역"},{"name":"바바성형외과의원","district":"성형외과","station":"압구정역"},{"name":"압구정튠의원","district":"피부과","station":"압구정역"},{"name":"에스원성형외과의원","district":"성형외과","station":"압구정역"},{"name":"노블케어요양병원 1관","district":"노인,요양병원","station":"압구정역"},{"name":"VS라인의원","district":"피부과","station":"압구정역"},{"name":"JK성형외과의원","district":"성형외과","station":"압구정역"},{"name":"연세바로치과의원","district":"치과","station":"압구정역"},{"name":"압구정현대이비인후과의원","district":"이비인후과","station":"압구정역"},{"name":"프로필성형외과의원","district":"성형외과","station":"압구정역"},{"name":"압구정페이스라인 성형외과의원","district":"성형외과","station":"압구정역"},{"name":"톡스앤필의원 압구정점","district":"피부과","station":"압구정역"},{"name":"미래이비인후과의원","district":"이비인후과","station":"압구정역"},{"name":"리디안의원","district":"성형외과","station":"압구정역"},{"name":"제이비미소 이비인후과의원","district":"이비인후과","station":"압구정역"},{"name":"바롬치과의원","district":"치과","station":"압구정역"},{"name":"굿모나의원","district":"피부과","station":"압구정역"},{"name":"서울브레인신경과의원","district":"신경과","station":"압구정역"},{"name":"라움성형외과의원","district":"성형외과","station":"압구정역"},{"name":"두한성형외과","district":"성형외과","station":"압구정역"},{"name":"아이러브안과의원","district":"안과","station":"압구정역"},{"name":"앵글치과의원","district":"치과","station":"압구정역"},{"name":"마침표성형외과의원","district":"성형외과","station":"압구정역"},{"name":"아르나의원","district":"일반의원","station":"압구정역"},{"name":"코코성형외과의원","district":"성형외과","station":"압구정역"},{"name":"탑페이스성형외과의원","district":"성형외과","station":"압구정역"},{"name":"SL안과의원","district":"안과","station":"압구정역"},{"name":"에버피부과의원","district":"피부과","station":"압구정역"},{"name":"디에이성형외과의원","district":"성형외과","station":"강남역"},{"name":"밝은성모안과의원","district":"안과","station":"강남역"},{"name":"하루플란트치과의원","district":"치과","station":"강남역"},{"name":"똑똑플란트치과의원","district":"치과","station":"강남역"},{"name":"이지함피부과의원 강남점","district":"피부과","station":"강남역"},{"name":"에이비성형외과의원","district":"성형외과","station":"강남역"},{"name":"모리스의원","district":"피부과","station":"강남역"},{"name":"원진성형외과의원","district":"성형외과","station":"강남역"},{"name":"르샤인의원","district":"일반의원","station":"강남역"},{"name":"눈에미소안과의원","district":"안과","station":"강남역"},{"name":"비앤빛안과의원","district":"안과","station":"강남역"},{"name":"밝음나눔안과의원 강남점","district":"안과","station":"강남역"},{"name":"오브제성형외과의원","district":"성형외과","station":"강남역"},{"name":"강남그랜드안과의원","district":"안과","station":"강남역"},{"name":"지에스안과의원","district":"안과","station":"강남역"},{"name":"강남스마일안과의원","district":"안과","station":"강남역"},{"name":"여름의원","district":"피부과","station":"강남역"},{"name":"원치과의원","district":"치과","station":"강남역"},{"name":"리엔장성형외과의원 피부과","district":"성형외과","station":"강남역"},{"name":"젊어지는치과의원 강남역","district":"치과","station":"강남역"},{"name":"삼성드림이비인후과의원 강남점","district":"이비인후과","station":"강남역"},{"name":"글로리서울안과의원","district":"안과","station":"강남역"},{"name":"강남새로치과의원","district":"치과","station":"강남역"},{"name":"강남이오스안과의원","district":"안과","station":"강남역"},{"name":"CU클린업피부과의원 강남점","district":"피부과","station":"강남역"},{"name":"아이리움안과의원","district":"안과","station":"강남역"},{"name":"맥스웰피부과의원 강남점","district":"피부과","station":"강남역"},{"name":"퍼스트삼성안과","district":"안과","station":"강남역"},{"name":"강남클리어치과의원","district":"치과","station":"강남역"},{"name":"아비쥬의원 강남신관","district":"피부과","station":"강남역"},{"name":"톡스앤필의원 강남본점","district":"피부과","station":"강남역"},{"name":"강남레옹치과의원","district":"치과","station":"강남역"},{"name":"블리비의원 강남역점","district":"피부과","station":"강남역"},{"name":"강남루덴치과의원","district":"치과","station":"강남역"},{"name":"드림성모안과의원","district":"안과","station":"강남역"},{"name":"강남밴스의원","district":"피부과","station":"강남역"},{"name":"아비쥬의원 강남본관","district":"피부과","station":"강남역"},{"name":"메디스캔의원","district":"내과","station":"강남역"},{"name":"연세코앤이비인후과의원","district":"이비인후과","station":"강남역"},{"name":"화이트드림치과의원 강남","district":"치과","station":"강남역"},{"name":"클리어서울안과의원","district":"안과","station":"강남역"},{"name":"강남브이에스라인의원","district":"피부과","station":"강남역"},{"name":"진성형외과의원","district":"성형외과","station":"강남역"},{"name":"세니아클리닉 1관","district":"피부과","station":"강남역"},{"name":"온리프성형외과의원","district":"성형외과","station":"강남역"}]};
 
+// 역별 색상
+const STATION_COLORS = {
+  "교대역": "#4f7cff", "신사역": "#ff6b6b", "신논현역": "#34d399",
+  "압구정역": "#fbbf24", "강남역": "#a78bfa"
+};
+
 let selectedManager=null, selectedHospital=null, allHospitals=[], radioValues={}, activeFilter="전체";
+let kakaoMap=null, markers=[], infowindow=null, geocoder=null;
+let mapInitialized=false;
+
+// 탭 전환
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='map' && selectedManager && !mapInitialized) {
+    initMap();
+  }
+}
+
+// 지도 초기화
+function initMap() {
+  if(typeof kakao === 'undefined' || typeof kakao.maps === 'undefined') {
+    setTimeout(initMap, 300);
+    return;
+  }
+  mapInitialized = true;
+  const container = document.getElementById('kakaoMap');
+  const options = { center: new kakao.maps.LatLng(37.5049, 127.0252), level: 5 };
+  kakaoMap = new kakao.maps.Map(container, options);
+  geocoder = new kakao.maps.services.Geocoder();
+  infowindow = new kakao.maps.CustomOverlay({ zIndex: 10 });
+  if(selectedManager) loadMapMarkers(selectedManager);
+}
+
+// 지도에 핀 찍기
+function loadMapMarkers(manager) {
+  if(!kakaoMap) return;
+  markers.forEach(m => m.setMap(null));
+  markers = [];
+  infowindow.setMap(null);
+
+  const hospitals = HOSPITALS[manager] || [];
+  const stations = [...new Set(hospitals.map(h=>h.station))];
+
+  // 역별 레전드 업데이트
+  document.getElementById('stationLegend').innerHTML = stations.map(s => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${STATION_COLORS[s]||'#888'}"></div>
+      <span>${s}</span>
+    </div>`).join('');
+
+  let done = 0;
+  const bounds = new kakao.maps.LatLngBounds();
+
+  hospitals.forEach((h, i) => {
+    geocoder.addressSearch(h.name + ' 서울', function(result, status) {
+      done++;
+      if(status === kakao.maps.services.Status.OK) {
+        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+        bounds.extend(coords);
+
+        const color = STATION_COLORS[h.station] || '#888';
+        const markerImage = new kakao.maps.MarkerImage(
+          `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='36' viewBox='0 0 28 36'><path d='M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z' fill='${encodeURIComponent(color)}'/><circle cx='14' cy='14' r='6' fill='white'/></svg>`,
+          new kakao.maps.Size(28, 36),
+          { offset: new kakao.maps.Point(14, 36) }
+        );
+
+        const marker = new kakao.maps.Marker({ position: coords, image: markerImage, map: kakaoMap });
+        markers.push(marker);
+
+        kakao.maps.event.addListener(marker, 'click', function() {
+          infowindow.setMap(null);
+          const content = `<div class="custom-infowindow">
+            <div class="iw-name">${h.name}</div>
+            <div class="iw-meta">${h.station} · ${h.district}</div>
+            <button class="iw-btn" onclick="goToChecklist('${h.name.replace(/'/g,"\\'")}','${h.station}','${h.district}')">체크리스트 작성</button>
+          </div>`;
+          infowindow.setContent(content);
+          infowindow.setPosition(coords);
+          infowindow.setMap(kakaoMap);
+        });
+      }
+      if(done === hospitals.length && !bounds.isEmpty()) {
+        kakaoMap.setBounds(bounds);
+      }
+    });
+  });
+}
+
+// 지도에서 체크리스트로 이동
+function goToChecklist(name, station, district) {
+  infowindow.setMap(null);
+  selectedHospital = { name, station, district };
+  document.getElementById('selectedName').textContent = name;
+  document.getElementById('selectedMeta').textContent = `${station} · ${district}`;
+  document.getElementById('selectedHospitalBox').classList.add('visible');
+  document.getElementById('hospitalList').style.display='none';
+  document.getElementById('searchInput').style.display='none';
+  document.getElementById('filterRow').style.display='none';
+  document.getElementById('stepForm').classList.add('visible');
+  updateProgress();
+  // 체크리스트 탭으로 전환
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn')[0].classList.add('active');
+  document.getElementById('tab-checklist').classList.add('active');
+  setTimeout(()=>document.getElementById('stepForm').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
 
 function updateProgress() {
   let p=10;
@@ -166,6 +325,11 @@ function selectManager(name, btn) {
   renderHospitals(allHospitals);
   document.getElementById('stepHospital').classList.add('visible');
   updateProgress();
+  // 지도 정보 업데이트
+  document.getElementById('mapManagerInfo').innerHTML = `<strong>${name}</strong> 매니저 담당 병원 ${allHospitals.length}개 · 지도 탭에서 위치를 확인하세요`;
+  // 지도가 이미 열려있으면 바로 업데이트
+  if(mapInitialized) loadMapMarkers(name);
+  else mapInitialized = false;
   setTimeout(()=>document.getElementById('stepHospital').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
@@ -197,7 +361,7 @@ function renderHospitals(hospitals) {
   list.innerHTML=hospitals.map(h=>`
     <div class="hospital-item" onclick='selectHospital(${JSON.stringify(h)})'>
       <div><div class="hospital-name">${h.name}</div><div class="hospital-meta">${h.station} · ${h.district}</div></div>
-      <span class="hospital-badge">${h.district}</span>
+      <span class="hospital-badge" style="border-color:${STATION_COLORS[h.station]||'var(--border)'};color:${STATION_COLORS[h.station]||'var(--text2)'}">${h.station}</span>
     </div>`).join('');
 }
 
@@ -252,13 +416,14 @@ function submitForm() {
     coffeeMachine:radioValues['coffeeMachineGroup']||'',
     quotation:radioValues['quotationGroup']||'',
     irregular:radioValues['irregularGroup']||'',
+    memo:document.getElementById('memo').value,
   });
   const cbName='cb_'+Date.now();
   const script=document.createElement('script');
   window[cbName]=function(data){
     if(data.success){
       showToast('✓ 저장 완료!');
-      ['cleaningMethod','serviceCycle','serviceFee','area','restroom'].forEach(id=>document.getElementById(id).value='');
+      ['cleaningMethod','serviceCycle','serviceFee','area','restroom','memo'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('visitDate').value='';
       document.querySelectorAll('.radio-btn').forEach(b=>b.classList.remove('active'));
       radioValues={};
