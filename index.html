@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>병원 영업 체크리스트</title>
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=92a0d2eaf99febabb9f8d3265970ceda&libraries=services"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_TZS2ze-uRtCoYlgQL5zQD-2RsBV3X74&libraries=places&language=ko"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -83,7 +83,7 @@
   /* 지도 탭 */
   .map-manager-info { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 12px; font-size: 13px; color: var(--text2); }
   .map-manager-info strong { color: var(--accent); }
-  #kakaoMap { width: 100%; height: 420px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  #googleMap { width: 100%; height: 420px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
   .map-placeholder { width: 100%; height: 420px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text2); font-size: 14px; gap: 8px; }
   .station-legend { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
   .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text2); }
@@ -185,7 +185,7 @@
   <div class="map-manager-info" id="mapManagerInfo">
     매니저를 선택하면 담당 병원이 지도에 표시됩니다.
   </div>
-  <div id="kakaoMap"></div>
+  <div id="googleMap"></div>
   <div class="station-legend" id="stationLegend"></div>
 </div>
 
@@ -203,7 +203,7 @@ const STATION_COLORS = {
 };
 
 let selectedManager=null, selectedHospital=null, allHospitals=[], radioValues={}, activeFilter="전체";
-let kakaoMap=null, markers=[], infowindow=null, geocoder=null;
+let gMap=null, markers=[], openInfoWindow=null;
 let mapInitialized=false;
 
 // 탭 전환
@@ -215,86 +215,71 @@ function switchTab(tab, btn) {
   if(tab==='map') {
     if(selectedManager && !mapInitialized) {
       setTimeout(initMap, 150);
-    } else if(kakaoMap) {
-      setTimeout(()=>kakaoMap.relayout(), 50);
+    } else if(gMap) {
+      setTimeout(()=>google.maps.event.trigger(gMap,'resize'), 50);
     }
   }
 }
 
 // 지도 초기화
 function initMap() {
-  if(typeof kakao === 'undefined' || typeof kakao.maps === 'undefined') {
-    setTimeout(initMap, 300);
-    return;
-  }
+  if(typeof google === 'undefined') { setTimeout(initMap, 300); return; }
   mapInitialized = true;
-  const container = document.getElementById('kakaoMap');
-  const options = { center: new kakao.maps.LatLng(37.5049, 127.0252), level: 5 };
-  kakaoMap = new kakao.maps.Map(container, options);
-  geocoder = new kakao.maps.services.Geocoder();
-  infowindow = new kakao.maps.CustomOverlay({ zIndex: 10 });
+  gMap = new google.maps.Map(document.getElementById('googleMap'), {
+    center: { lat: 37.5049, lng: 127.0252 }, zoom: 14,
+    styles: [
+      {elementType:'geometry',stylers:[{color:'#1a1d27'}]},
+      {elementType:'labels.text.fill',stylers:[{color:'#8b90a8'}]},
+      {elementType:'labels.text.stroke',stylers:[{color:'#1a1d27'}]},
+      {featureType:'road',elementType:'geometry',stylers:[{color:'#2e3247'}]},
+      {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#8b90a8'}]},
+      {featureType:'water',elementType:'geometry',stylers:[{color:'#0f1117'}]},
+      {featureType:'poi',stylers:[{visibility:'off'}]},
+      {featureType:'transit',stylers:[{visibility:'off'}]}
+    ]
+  });
   if(selectedManager) loadMapMarkers(selectedManager);
 }
 
 // 지도에 핀 찍기
 function loadMapMarkers(manager) {
-  if(!kakaoMap) return;
-  markers.forEach(m => m.setMap(null));
-  markers = [];
-  infowindow.setMap(null);
-
-  const hospitals = HOSPITALS[manager] || [];
+  if(!gMap) return;
+  markers.forEach(m=>m.setMap(null)); markers=[];
+  if(openInfoWindow) openInfoWindow.close();
+  const hospitals = HOSPITALS[manager]||[];
   const stations = [...new Set(hospitals.map(h=>h.station))];
-
-  // 역별 레전드 업데이트
-  document.getElementById('stationLegend').innerHTML = stations.map(s => `
-    <div class="legend-item">
-      <div class="legend-dot" style="background:${STATION_COLORS[s]||'#888'}"></div>
-      <span>${s}</span>
-    </div>`).join('');
-
-  let done = 0;
-  const bounds = new kakao.maps.LatLngBounds();
-
-  hospitals.forEach((h, i) => {
-    geocoder.addressSearch(h.name + ' 서울', function(result, status) {
-      done++;
-      if(status === kakao.maps.services.Status.OK) {
-        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-        bounds.extend(coords);
-
-        const color = STATION_COLORS[h.station] || '#888';
-        const markerImage = new kakao.maps.MarkerImage(
-          `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='36' viewBox='0 0 28 36'><path d='M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z' fill='${encodeURIComponent(color)}'/><circle cx='14' cy='14' r='6' fill='white'/></svg>`,
-          new kakao.maps.Size(28, 36),
-          { offset: new kakao.maps.Point(14, 36) }
-        );
-
-        const marker = new kakao.maps.Marker({ position: coords, image: markerImage, map: kakaoMap });
-        markers.push(marker);
-
-        kakao.maps.event.addListener(marker, 'click', function() {
-          infowindow.setMap(null);
-          const content = `<div class="custom-infowindow">
-            <div class="iw-name">${h.name}</div>
-            <div class="iw-meta">${h.station} · ${h.district}</div>
-            <button class="iw-btn" onclick="goToChecklist('${h.name.replace(/'/g,"\\'")}','${h.station}','${h.district}')">체크리스트 작성</button>
-          </div>`;
-          infowindow.setContent(content);
-          infowindow.setPosition(coords);
-          infowindow.setMap(kakaoMap);
+  document.getElementById('stationLegend').innerHTML = stations.map(s=>`
+    <div class="legend-item"><div class="legend-dot" style="background:${STATION_COLORS[s]||'#888'}"></div><span>${s}</span></div>`).join('');
+  const bounds = new google.maps.LatLngBounds();
+  const service = new google.maps.places.PlacesService(gMap);
+  hospitals.forEach(h=>{
+    service.findPlaceFromQuery({query:h.name+' 서울',fields:['geometry']},function(results,status){
+      if(status===google.maps.places.PlacesServiceStatus.OK&&results[0]){
+        const pos=results[0].geometry.location;
+        bounds.extend(pos);
+        const color=STATION_COLORS[h.station]||'#888';
+        const marker=new google.maps.Marker({
+          position:pos, map:gMap,
+          icon:{path:'M12 0C5.37 0 0 5.37 0 12c0 9 12 19 12 19s12-10 12-19C24 5.37 18.63 0 12 0z',
+            fillColor:color,fillOpacity:1,strokeColor:'#fff',strokeWeight:1.5,scale:1.2,
+            anchor:new google.maps.Point(12,31)}
         });
-      }
-      if(done === hospitals.length && !bounds.isEmpty()) {
-        kakaoMap.setBounds(bounds);
+        markers.push(marker);
+        const iw=new google.maps.InfoWindow({content:`<div class="custom-infowindow">
+          <div class="iw-name">${h.name}</div>
+          <div class="iw-meta">${h.station} · ${h.district}</div>
+          <button class="iw-btn" onclick="goToChecklist('${h.name.replace(/'/g,"\'")}','${h.station}','${h.district}')">체크리스트 작성</button>
+          </div>`});
+        marker.addListener('click',()=>{if(openInfoWindow)openInfoWindow.close();iw.open(gMap,marker);openInfoWindow=iw;});
       }
     });
   });
+  setTimeout(()=>{if(!bounds.isEmpty())gMap.fitBounds(bounds);},3000);
 }
 
 // 지도에서 체크리스트로 이동
 function goToChecklist(name, station, district) {
-  infowindow.setMap(null);
+  if(openInfoWindow) openInfoWindow.close();
   selectedHospital = { name, station, district };
   document.getElementById('selectedName').textContent = name;
   document.getElementById('selectedMeta').textContent = `${station} · ${district}`;
